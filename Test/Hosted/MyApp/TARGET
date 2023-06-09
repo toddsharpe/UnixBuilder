@@ -1,0 +1,9 @@
+Name=MyApp
+
+[CSources]
+main.c
+
+[CppSources]
+support.cpp
+
+[Flags]

@@ -1,0 +1,1 @@
+~/GitHub/toddsharpe/UBuild/Src/UBuild/bin/Debug/net7.0/UBuild $@
