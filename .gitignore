@@ -1,0 +1,5 @@
+.vs
+.vscode
+build/
+Src/UBuild/bin
+Src/UBuild/obj
