@@ -8,7 +8,6 @@ namespace UBuild.Actions
 {
 	internal interface IAction
 	{
-		void Init();
 		bool Run();
 	}
 }

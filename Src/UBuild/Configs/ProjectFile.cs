@@ -10,13 +10,15 @@ namespace UBuild.Configs
 	{
 		internal static readonly string FileNamePrefix = "PROJECT_";
 
+		public string Name { get; }
 		public List<string> Targets { get; set; }
+		public List<string> Configs { get; set;}
 
-		public string Toolchain { get; set; }
-
-		internal ProjectFile(string project, string name) : base(Path.Combine(project, FileNamePrefix + name))
+		internal ProjectFile(string sourceDir, string name) : base(Path.Combine(sourceDir, FileNamePrefix + name))
 		{
-
+			Name = name;
+			Targets ??= new List<string>();
+			Configs ??= new List<string>();
 		}
 	}
 }

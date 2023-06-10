@@ -11,19 +11,19 @@ namespace UBuild.Configs
 	{
 		internal static readonly string FileName = "TARGET";
 
-		public string Dir { get; }
-		public string Name { get; set; }
+		public string Name { get; }
+		public string BinName { get; set; }
 		public string Toolchain { get; set; }
 		public List<string> CSources { get; set; }
 		public List<string> CppSources { get; set; }
 		public List<string> Flags { get; set; }
 
-		internal TargetFile(string dir) : base(Path.Combine(dir, FileName))
+		internal TargetFile(string sourceDir, string name) : base(Path.Combine(sourceDir, name, FileName))
 		{
-			Dir = dir;
-			CSources = new List<string>();
-			CppSources = new List<string>();
-			Flags = new List<string>();
+			Name = name;
+			CSources ??= new List<string>();
+			CppSources ??= new List<string>();
+			Flags ??= new List<string>();
 		}
 	}
 }
