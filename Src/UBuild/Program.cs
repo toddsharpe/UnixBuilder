@@ -20,7 +20,10 @@ public class Program
 	[Option("-t|--target <path>", Description = "Target to build")]
 	public string Target { get;}
 
-	[Option("-p|--toolchain <path>", Description = "Toolchain to use")]
+	[Option("-p|--project <path>", Description = "Project to build")]
+	public string Project { get;}
+
+	[Option("-c|--compiler <path>", Description = "Toolchain to use")]
 	public string Toolchain { get;} = "";
 
 	private ValidationResult OnValidate()
@@ -31,8 +34,8 @@ public class Program
 		switch (Action)
 		{
 		case ActionType.Build:
-			if (String.IsNullOrWhiteSpace(Target))
-				return new ValidationResult("Must specify a target");
+			if (String.IsNullOrWhiteSpace(Target) && String.IsNullOrWhiteSpace(Project))
+				return new ValidationResult("Must specify a target or project");
 			break;
 		}
 
@@ -47,8 +50,11 @@ public class Program
 		switch (Action)
 		{
 			case ActionType.Build:
-				string project = Directory.GetCurrentDirectory();
-				action = new BuildAction(project, Target, Toolchain);
+				string sources = Directory.GetCurrentDirectory();
+				if (!String.IsNullOrEmpty(Project))
+					action = new BuildProjectAction(sources, Project, Toolchain);
+				else
+					action = new BuildAction(sources, Target, Toolchain);
 				break;
 
 			default:

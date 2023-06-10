@@ -9,6 +9,6 @@ namespace UBuild.Tasks
 	internal interface ITask
 	{
 		void Display();
-		void Run();
+		bool Run();
 	}
 }

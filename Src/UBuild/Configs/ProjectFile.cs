@@ -8,13 +8,13 @@ namespace UBuild.Configs
 {
 	internal class ProjectFile : ConfigFile
 	{
-		internal static readonly string FileName = "PROJECT";
+		internal static readonly string FileNamePrefix = "PROJECT_";
 
-		public string OutDir { get; set; }
+		public List<string> Targets { get; set; }
 
-		public List<string> Toolchains { get; set; }
+		public string Toolchain { get; set; }
 
-		internal ProjectFile(string project) : base(Path.Combine(project, FileName))
+		internal ProjectFile(string project, string name) : base(Path.Combine(project, FileNamePrefix + name))
 		{
 
 		}

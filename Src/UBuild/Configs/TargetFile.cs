@@ -12,18 +12,18 @@ namespace UBuild.Configs
 		internal static readonly string FileName = "TARGET";
 
 		public string Dir { get; }
-
 		public string Name { get; set; }
-
+		public string Toolchain { get; set; }
 		public List<string> CSources { get; set; }
-
 		public List<string> CppSources { get; set; }
-
 		public List<string> Flags { get; set; }
 
 		internal TargetFile(string dir) : base(Path.Combine(dir, FileName))
 		{
 			Dir = dir;
+			CSources = new List<string>();
+			CppSources = new List<string>();
+			Flags = new List<string>();
 		}
 	}
 }
