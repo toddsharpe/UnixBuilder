@@ -14,14 +14,14 @@ namespace UBuild.Actions
 		private string _baseDir;
 		private string _toolchain;
 
-		private ProjectFile _project;
+		private SourcesFile _project;
 		private TargetFile _target;
 
 		internal BuildAction(string dir, string target, string toolchain = "")
 		{
 			_baseDir = dir;
 
-			_project = new ProjectFile(dir);
+			_project = new SourcesFile(dir);
 			_target = new TargetFile(Path.Combine(dir, target));
 
 			_toolchain = toolchain;
@@ -33,10 +33,20 @@ namespace UBuild.Actions
 			_target.Load();
 		}
 
-		public void Run()
+		public bool Run()
 		{
 			//Get toolchain
 			string key = String.IsNullOrEmpty(_toolchain) ? "Host" : _toolchain;
+			if (!String.IsNullOrEmpty(_target.Toolchain))
+			{
+				if (_target.Toolchain != key)
+				{
+					Console.WriteLine("Skipping {0}, Target differs {1}, {2}", _target.Name, _target.Toolchain, key);
+					return false;
+				}
+			}
+
+			Console.WriteLine("Building {0} for {1}", _target.Name, key);
 
 			//Get toolchain file
 			ToolchainFile toolchain = new ToolchainFile(_baseDir, key);
@@ -105,17 +115,20 @@ namespace UBuild.Actions
 			//Display and execute
 			foreach (ITask task in tasks)
 			{
-				task.Display();
-				task.Run();
+				//task.Display();
+				if (!task.Run())
+					return false;
 			}
+
+			return true;
 		}
 
 		private string ResolvePath(string path)
 		{
-			if (path.StartsWith("//"))
+			if (path.StartsWith("^"))
 			{
 				//Path relative to project
-				return Path.Combine(_baseDir, path.Substring(2));
+				return Path.Combine(_baseDir, path.Substring(1));
 			}
 			else if (Path.IsPathRooted(path))
 			{

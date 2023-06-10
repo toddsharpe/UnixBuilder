@@ -18,10 +18,11 @@ namespace UBuild.Tasks
 			_args = args;
 		}
 
-		public void Run()
+		public bool Run()
 		{
 			Process process = Process.Start(_bin, string.Join(" ", _args));
 			process.WaitForExit();
+			return process.ExitCode == 0;
 		}
 
 		public void Display()

@@ -1,0 +1,10 @@
+Name=MyHosted
+Toolchain=Host
+
+[CSources]
+main.c
+
+[CppSources]
+support.cpp
+
+[Flags]

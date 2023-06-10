@@ -9,6 +9,6 @@ namespace UBuild.Actions
 	internal interface IAction
 	{
 		void Init();
-		void Run();
+		bool Run();
 	}
 }

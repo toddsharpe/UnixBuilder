@@ -1,0 +1,10 @@
+Name=ArtyApp
+Toolchain=Artyz7
+
+[CSources]
+main.c
+
+[CppSources]
+support.cpp
+
+[Flags]
