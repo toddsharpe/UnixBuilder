@@ -1,4 +1,4 @@
-Name=MyApp
+BinName=MyApp
 
 [CSources]
 main.c

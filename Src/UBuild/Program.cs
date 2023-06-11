@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using McMaster.Extensions.CommandLineUtils;
 using UBuild.Actions;
+using UBuild.Models;
 
 public class Program
 {
@@ -11,7 +12,7 @@ public class Program
 	{
 		None,
 		Build,
-		List
+		Package,
 	}
 
 	[Argument(0, Description = "Action")]
@@ -24,7 +25,10 @@ public class Program
 	public string Project { get;}
 
 	[Option("-c|--compiler <path>", Description = "Toolchain to use")]
-	public string Toolchain { get;} = "";
+	public string Toolchain { get;} = "Host";
+
+	[Option("-f|--file <path>", Description = "Package file")]
+	public PackageType PackageType { get;} = PackageType.Zip;
 
 	private ValidationResult OnValidate()
 	{
@@ -37,6 +41,11 @@ public class Program
 			if (String.IsNullOrWhiteSpace(Target) && String.IsNullOrWhiteSpace(Project))
 				return new ValidationResult("Must specify a target or project");
 			break;
+
+		case ActionType.Package:
+			if (String.IsNullOrWhiteSpace(Project))
+				return new ValidationResult("Must specify a project");
+			break;
 		}
 
 		return ValidationResult.Success;
@@ -44,24 +53,42 @@ public class Program
 
 	private void OnExecute()
 	{
+		string sourcesDir = Directory.GetCurrentDirectory();
 		Console.WriteLine("Action: {0}", Action);
 
 		IAction action;
 		switch (Action)
 		{
 			case ActionType.Build:
-				string sources = Directory.GetCurrentDirectory();
+			{
+				Sources sources = Sources.Open(sourcesDir);
+				Toolchain toolchain = sources.GetToolchain(Toolchain);
+
 				if (!String.IsNullOrEmpty(Project))
-					action = new BuildProjectAction(sources, Project, Toolchain);
+				{
+					Project project = sources.GetProject(Project);
+					action = new BuildProjectAction(sources, project, toolchain);
+				}
 				else
-					action = new BuildAction(sources, Target, Toolchain);
+				{
+					Target target = sources.GetTarget(Target);
+					action = new BuildAction(sources, target, toolchain);
+				}
 				break;
+			}
+
+			case ActionType.Package:
+			{
+				Sources sources = Sources.Open(sourcesDir);
+				Project project = sources.GetProject(Project);
+				action = new PackageAction(sources, project, PackageType);
+				break;
+			}
 
 			default:
 				throw new NotImplementedException();
 		}
 
-		action.Init();
 		action.Run();
 	}
 }

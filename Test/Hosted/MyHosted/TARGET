@@ -1,4 +1,4 @@
-Name=MyHosted
+BinName=MyHosted
 Toolchain=Host
 
 [CSources]

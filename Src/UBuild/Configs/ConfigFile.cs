@@ -14,9 +14,10 @@ namespace UBuild.Configs
 		internal ConfigFile(string file)
 		{
 			File = file;
+			Load();
 		}
 
-		public void Load()
+		private void Load()
 		{
 			//Use reflection to get properties
 			PropertyInfo[] properties = this.GetType().GetProperties();

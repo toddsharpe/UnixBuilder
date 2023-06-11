@@ -10,13 +10,14 @@ namespace UBuild.Configs
 	{
 		internal static readonly string FileName = "SOURCES";
 
+		public string SourcesDir { get; }
 		public string OutDir { get; set; }
-
+		public string ConfigDir { get; set; }
 		public List<string> Toolchains { get; set; }
 
-		internal SourcesFile(string project) : base(Path.Combine(project, FileName))
+		internal SourcesFile(string sourcesDir) : base(Path.Combine(sourcesDir, FileName))
 		{
-
+			SourcesDir = sourcesDir;
 		}
 	}
 }
