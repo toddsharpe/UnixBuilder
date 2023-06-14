@@ -5,5 +5,7 @@ main.c
 
 [CppSources]
 support.cpp
+>shared.cpp
+>Common/common.cpp
 
 [Flags]

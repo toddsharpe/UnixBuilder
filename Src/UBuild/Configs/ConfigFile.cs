@@ -24,11 +24,12 @@ namespace UBuild.Configs
 
 			//Parse
 			Dictionary<string, object> parsed = Parse();
-			
+
 			foreach (KeyValuePair<string, object> kvp in parsed)
 			{
 				//Ensure property exists
-				PropertyInfo prop = properties.Single(i => i.Name == kvp.Key);
+				PropertyInfo prop = properties.SingleOrDefault(i => i.Name == kvp.Key)
+					?? throw new Exception("Property not found: " + kvp.Key + " while parsing " + File);
 				prop.SetValue(this, kvp.Value);
 			}
 		}

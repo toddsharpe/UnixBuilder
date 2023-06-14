@@ -8,7 +8,8 @@ namespace UBuild.Models
 {
 	internal class Target
 	{
-		public string BinFile => Path.Combine(_outDir, Config.BinName + ".elf");
+		private static readonly string SourceRootPathPrefix = ">";
+		public string BinFile => Path.Combine(_outDir, Config.BinName);
 		public TargetFile Config { get; }
 
 		private readonly string _outDir;
@@ -29,22 +30,16 @@ namespace UBuild.Models
 
 		public string ResolveSourcePath(string source)
 		{
-			if (source.StartsWith('^'))
+			if (source.StartsWith(SourceRootPathPrefix))
 			{
 				//Path is relative to sources dir (current directory)
-				return source.Substring(1);
+				return source.Substring(SourceRootPathPrefix.Length);
 			}
 			else
 			{
 				//Otherwise, assume path is relative to target
 				return Path.Combine(Config.Name, source);
 			}
-		}
-
-		public string GetObjectPath(string source)
-		{
-			string objectFile = source.Replace(".cc", ".o").Replace(".cpp", ".o").Replace(".c", ".o");
-			return Path.Combine(_outDir, objectFile);
 		}
 	}
 }

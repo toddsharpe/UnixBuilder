@@ -41,7 +41,7 @@ namespace UBuild.Actions
 			{
 				//Get absolute paths
 				string input = _target.ResolveSourcePath(source);
-				string output = _target.GetObjectPath(source);
+				string output = _sources.GetObjectPath(input);
 				objects.Add(output);
 
 				List<string> flags = new List<string>
@@ -60,7 +60,7 @@ namespace UBuild.Actions
 			{
 				//Get absolute paths
 				string input = _target.ResolveSourcePath(source);
-				string output = _target.GetObjectPath(source);
+				string output = _sources.GetObjectPath(input);
 				objects.Add(output);
 
 				List<string> flags = new List<string>

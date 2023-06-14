@@ -8,6 +8,7 @@ namespace UBuild.Models
 {
 	internal class Sources
 	{
+		private static readonly string SourceRootPathPrefix = ">";
 		public string OutPath => Path.GetFullPath(Path.Combine(Config.SourcesDir, Config.OutDir));
 		public string ConfigsPath => Path.GetFullPath(Path.Combine(Config.SourcesDir, Config.ConfigDir));
 		
@@ -42,22 +43,28 @@ namespace UBuild.Models
 			return new Toolchain(toolchainFile);
 		}
 
-		//NOTE(tsharpe): Combine with Target::ResolveSourcePath
+		//NOTE(tsharpe): Combine with Target::ResolveSourcePath?
 		public string ResolvePath(string entry)
 		{
 			if (Path.IsPathRooted(entry))
 			{
 				return entry;
 			}
-			else if (entry.StartsWith('^'))
+			else if (entry.StartsWith(SourceRootPathPrefix))
 			{
 				//Path is relative to sources dir (current directory)
-				return Path.Combine(ConfigsPath, entry.Substring(1));
+				return Path.Combine(ConfigsPath, entry.Substring(SourceRootPathPrefix.Length));
 			}
 			else
 			{
 				throw new NotImplementedException();
 			}
+		}
+
+		public string GetObjectPath(string source)
+		{
+			string objectFile = source.Replace(".cc", ".o").Replace(".cpp", ".o").Replace(".c", ".o");
+			return Path.Combine(OutPath, objectFile);
 		}
 	}
 }
