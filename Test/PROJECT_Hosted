@@ -4,5 +4,5 @@ Common/MyApp2
 Hosted/MyHosted
 
 [Configs]
-^File1
-^Dir1
+>File1
+>Dir1
