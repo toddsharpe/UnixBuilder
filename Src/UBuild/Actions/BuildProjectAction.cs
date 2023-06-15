@@ -18,14 +18,15 @@ namespace UBuild.Actions
 						.Select(i => new BuildAction(sources, i, toolchain));
 		}
 		
-		public bool Run()
+		public ActionResult Run()
 		{
 			foreach (IAction action in _builds)
 			{
-				action.Run();
+				if (action.Run() == ActionResult.Failed)
+					return ActionResult.Failed;
 			}
 
-			return true;
+			return ActionResult.Success;
 		}
 	}
 }

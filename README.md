@@ -2,8 +2,8 @@
 Very simple build system for small projects, accepting various unix style toolchains (for cross-compilation, etc).
 
 ## Usage
-* Build target: ```../latest.sh <[build, package]> -t <target> -c <toolchain,"Host">```
-* Build package: ```../latest.sh <[build, package]> -p <package> -c <toolchain, "Host">```
+* Build target: ```../latest.sh <[build, package, run]> -t <target> -c <toolchain,"Host">```
+* Build package: ```../latest.sh <[build, package, run]> -p <package> -c <toolchain, "Host">```
 
 ## Building
 ```
@@ -35,9 +35,14 @@ dat/<list of config files>
 Entries in ```[Configs]``` section can be directory or files. These can also use ">" syntax to be relative to ```ConfigDir```.
 
 ## Example Usage
-Build one target with Host toolchain
+Build one target with default(Host) toolchain
 ```
 ../latest.sh build -t Hosted/MyHosted
+```
+
+Build and run one target with default(Host) toolchain
+```
+../latest.sh run -t Hosted/MyHosted
 ```
 
 Build one target specified toolchain (cross-compile)
