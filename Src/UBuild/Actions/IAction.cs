@@ -6,8 +6,15 @@ using System.Threading.Tasks;
 
 namespace UBuild.Actions
 {
+	public enum ActionResult
+	{
+		Success,
+		Skipped,
+		Failed
+	}
+
 	internal interface IAction
 	{
-		bool Run();
+		ActionResult Run();
 	}
 }

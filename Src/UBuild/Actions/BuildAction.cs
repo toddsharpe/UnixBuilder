@@ -22,13 +22,13 @@ namespace UBuild.Actions
 			_toolchain = toolchain;
 		}
 
-		public bool Run()
+		public ActionResult Run()
 		{
 			//Get toolchain
 			if (!_target.CompatibleWith(_toolchain))
 			{
 				Console.WriteLine("Skipping {0}, Toolchain differs {1}, {2}", _target.Config.Name, _target.Config.Toolchain, _toolchain.Config.Name);
-				return false;
+				return ActionResult.Skipped;
 			}
 
 			Console.WriteLine("Building {0} for {1}", _target.Config.Name, _toolchain.Config.Name);
@@ -97,12 +97,12 @@ namespace UBuild.Actions
 			foreach (ITask task in tasks)
 			{
 				if (!task.Run())
-					return false;
+					return ActionResult.Failed;
 			}
 
 			Console.WriteLine("\tSuccessfully built {0}", _target.BinFile);
 
-			return true;
+			return ActionResult.Success;
 		}
 	}
 }

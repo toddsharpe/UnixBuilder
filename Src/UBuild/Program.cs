@@ -13,6 +13,7 @@ public class Program
 		None,
 		Build,
 		Package,
+		Run
 	}
 
 	[Argument(0, Description = "Action")]
@@ -45,6 +46,11 @@ public class Program
 		case ActionType.Package:
 			if (String.IsNullOrWhiteSpace(Project))
 				return new ValidationResult("Must specify a project");
+			break;
+
+		case ActionType.Run:
+			if (String.IsNullOrWhiteSpace(Target))
+				return new ValidationResult("Must specify a target");
 			break;
 		}
 
@@ -82,6 +88,16 @@ public class Program
 				Sources sources = Sources.Open(sourcesDir);
 				Project project = sources.GetProject(Project);
 				action = new PackageAction(sources, project, PackageType);
+				break;
+			}
+
+			case ActionType.Run:
+			{
+				Sources sources = Sources.Open(sourcesDir);
+				Target target = sources.GetTarget(Target);
+				Toolchain toolchain = sources.GetToolchain(Toolchain);
+
+				action = new BuildRunAction(sources, target, toolchain);
 				break;
 			}
 

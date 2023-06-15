@@ -26,7 +26,7 @@ namespace UBuild.Actions
 			_type = type;
 		}
 
-		public bool Run()
+		public ActionResult Run()
 		{
 			Console.WriteLine("Packaging {0} for {1}", _project.Config.Name, _type);
 
@@ -60,7 +60,7 @@ namespace UBuild.Actions
 				Console.WriteLine("\tSuccessfully built {0}", packager.DestFile);
 			}
 
-			return true;
+			return ActionResult.Success;
 		}
 
 		private IPackager GetPackager(string destFile)
