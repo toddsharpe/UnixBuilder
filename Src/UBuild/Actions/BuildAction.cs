@@ -36,6 +36,15 @@ namespace UBuild.Actions
 			List<ITask> tasks = new List<ITask>();
 			List<string> objects = new List<string>();
 
+			//Build list of includes
+			List<string> includes = new List<string>();
+			foreach (string includeDir in _target.Config.IncludeDirs)
+			{
+				//Get absolute path
+				string path = _target.ResolveSourcePath(includeDir);
+				includes.Add(path);
+			}
+
 			//Build C sources
 			foreach (string source in _target.Config.CSources)
 			{
@@ -51,6 +60,11 @@ namespace UBuild.Actions
 					$"-o {output}",
 					$"-I {_sources.Config.SourcesDir}"
 				};
+
+				//Add include dirs
+				foreach (string include in includes)
+					flags.Add($"-I {include}");
+
 				flags.AddRange(_toolchain.Config.Flags);
 				tasks.Add(new RunTask(_toolchain.Gcc, flags));
 			}
