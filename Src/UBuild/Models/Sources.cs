@@ -63,7 +63,7 @@ namespace UBuild.Models
 
 		public string GetObjectPath(string source)
 		{
-			string objectFile = source.Replace(".cc", ".o").Replace(".cpp", ".o").Replace(".c", ".o");
+			string objectFile = source.Replace(".cc", ".o").Replace(".cpp", ".o").Replace(".c", ".o").Replace(".s", ".o");
 			return Path.Combine(OutPath, objectFile);
 		}
 	}

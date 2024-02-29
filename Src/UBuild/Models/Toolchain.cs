@@ -10,6 +10,8 @@ namespace UBuild.Models
 	{
 		public string Gcc => Path.Combine(Config.Bin, Config.Prefix + "gcc");
 		public string Gpp => Path.Combine(Config.Bin, Config.Prefix + "g++");
+		public string As => Path.Combine(Config.Bin, Config.Prefix + "gcc"); /*  -x assembler-with-cpp */
+		public string ObjCopy => Path.Combine(Config.Bin, Config.Prefix + "objcopy");
 		
 		public ToolchainFile Config { get; }
 		internal Toolchain(ToolchainFile config)

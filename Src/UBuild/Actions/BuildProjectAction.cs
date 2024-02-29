@@ -9,6 +9,7 @@ namespace UBuild.Actions
 {
 	public class BuildProjectAction : IAction
 	{
+		public bool Verbose { private get; set; }
 		private readonly IEnumerable<BuildAction> _builds;
 
 		internal BuildProjectAction(Sources sources, Project project, Toolchain toolchain)
@@ -22,6 +23,7 @@ namespace UBuild.Actions
 		{
 			foreach (IAction action in _builds)
 			{
+				action.Verbose = Verbose;
 				if (action.Run() == ActionResult.Failed)
 					return ActionResult.Failed;
 			}

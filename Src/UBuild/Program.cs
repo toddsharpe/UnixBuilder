@@ -31,6 +31,9 @@ public class Program
 	[Option("-f|--file <path>", Description = "Package file")]
 	public PackageType PackageType { get;} = PackageType.Zip;
 
+	[Option("-v|--verbose", Description = "Display commands.")]
+	public bool Verbose { get;} = false;
+
 	private ValidationResult OnValidate()
 	{
 		if (Action == ActionType.None)
@@ -105,6 +108,7 @@ public class Program
 				throw new NotImplementedException();
 		}
 
+		action.Verbose = Verbose;
 		action.Run();
 	}
 }

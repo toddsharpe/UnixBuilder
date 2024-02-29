@@ -15,6 +15,7 @@ namespace UBuild.Actions
 
 	internal interface IAction
 	{
+		bool Verbose { set; }
 		ActionResult Run();
 	}
 }

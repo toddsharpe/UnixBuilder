@@ -38,7 +38,7 @@ namespace UBuild.Configs
 		{
 			Dictionary<string, object> parsed = new Dictionary<string, object>();
 
-			string subsection = null;
+			object current = null;
 			string[] lines = System.IO.File.ReadAllLines(this.File);
 			foreach (string line in lines)
 			{
@@ -48,45 +48,32 @@ namespace UBuild.Configs
 				if (line[0] == '#')
 					continue;
 
-				if (line.Contains('='))
-				{
-					//Simple KVP
-					string[] parts = line.Split('=');
-					Debug.Assert(parts.Length == 2);
-
-					if (subsection != null)
-					{
-						if (!parsed.ContainsKey(subsection))
-							parsed.Add(subsection, new Dictionary<string, string>());
-						else
-						{
-							Type type = parsed[subsection].GetType();
-							if (type == typeof(List<string>))
-							{
-								((List<string>)parsed[subsection]).Add(line);
-							}
-							else
-							{
-								((Dictionary<string, string>)parsed[subsection]).Add(parts[0], parts[1]);
-							}
-						}
-					}
-					else
-					{
-						parsed.Add(parts[0], parts[1]);
-					}
-				}
-				else if (line.Contains('['))
+				if (line.Contains('['))
 				{
 					//Start of subsection
-					subsection = line.Replace("[", string.Empty).Replace("]", string.Empty);
+					string subsection = line.Replace("[", string.Empty).Replace("]", string.Empty);
+					Type type = this.GetType().GetProperty(subsection)?.PropertyType;
+					current = Activator.CreateInstance(type);
+					parsed.Add(subsection, current);
+					continue;
 				}
-				else
+
+				if (current == null)
 				{
-					//Subsection is just a list of values
-					if (!parsed.ContainsKey(subsection))
-						parsed.Add(subsection, new List<string>());
-					((List<string>)parsed[subsection]).Add(line);
+					//Simple Key/Value of property
+					string[] parts = line.Split('=');
+					Debug.Assert(parts.Length == 2);
+					parsed.Add(parts[0], parts[1]);
+				}
+				else if (current.GetType() == typeof(List<string>))
+				{
+					((List<string>)current).Add(line);
+				}
+				else if (current.GetType() == typeof(Dictionary<string, string>))
+				{
+					string[] parts = line.Split('=');
+					Debug.Assert(parts.Length == 2);
+					((Dictionary<string, string>)current).Add(parts[0], parts[1]);
 				}
 			}
 
