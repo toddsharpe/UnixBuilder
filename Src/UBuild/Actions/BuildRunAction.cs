@@ -10,6 +10,7 @@ namespace UBuild.Actions
 {
 	public class BuildRunAction : IAction
 	{
+		public bool Verbose { private get; set; }
 		private readonly BuildAction _action;
 		private readonly Target _target;
 
@@ -21,6 +22,7 @@ namespace UBuild.Actions
 		
 		public ActionResult Run()
 		{
+			_action.Verbose = Verbose;
 			ActionResult result = _action.Run();
 			if (result != ActionResult.Success)
 				return result;

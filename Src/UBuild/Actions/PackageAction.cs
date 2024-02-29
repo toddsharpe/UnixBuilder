@@ -15,6 +15,7 @@ namespace UBuild.Actions
 	
 	public class PackageAction : IAction
 	{
+		public bool Verbose { private get; set; }
 		private readonly Sources _sources;
 		private readonly Project _project;
 		private readonly PackageType _type;

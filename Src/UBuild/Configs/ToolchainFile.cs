@@ -13,11 +13,13 @@ namespace UBuild.Configs
 		public string Bin { get; set; }
 		public string Prefix { get; set; }
 		public List<string> Flags { get; set; }
+		public List<string> LinkFlags { get; set; }
 
 		internal ToolchainFile(string sourceDir, string name) : base(Path.Combine(sourceDir, FileNamePrefix + name))
 		{
 			Name = name;
 			Flags ??= new List<string>();
+			LinkFlags ??= new List<string>();
 		}
 	}
 }

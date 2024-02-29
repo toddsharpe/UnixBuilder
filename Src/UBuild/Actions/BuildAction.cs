@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 using UBuild.Configs;
 using UBuild.Tasks;
 using UBuild.Models;
+using System.Diagnostics;
 
 namespace UBuild.Actions
 {
 	internal class BuildAction : IAction
 	{
+		public bool Verbose { private get; set; }
 		private readonly Sources _sources;
 		private readonly Target _target;
 		private readonly Toolchain _toolchain;
@@ -65,7 +67,14 @@ namespace UBuild.Actions
 				foreach (string include in includes)
 					flags.Add($"-I {include}");
 
+				//Add defines
+				foreach (string define in _target.Config.Defines)
+					flags.Add($"-D {define}");
+
+				//Add flags
+				flags.AddRange(_target.Config.Flags);
 				flags.AddRange(_toolchain.Config.Flags);
+
 				tasks.Add(new RunTask(_toolchain.Gcc, flags));
 			}
 
@@ -84,8 +93,47 @@ namespace UBuild.Actions
 					$"-o {output}",
 					$"-I {_sources.Config.SourcesDir}"
 				};
+
+				//Add include dirs
+				foreach (string include in includes)
+					flags.Add($"-I {include}");
+
+				//Add defines
+				foreach (string define in _target.Config.Defines)
+					flags.Add($"-D {define}");
+
+				//Add flags
+				flags.AddRange(_target.Config.Flags);
+				flags.AddRange(_target.Config.CppFlags);
 				flags.AddRange(_toolchain.Config.Flags);
+
 				tasks.Add(new RunTask(_toolchain.Gpp, flags));
+			}
+
+			//Asm sources
+			foreach (string source in _target.Config.AsmSources)
+			{
+				//Get absolute paths
+				string input = _target.ResolveSourcePath(source);
+				string output = _sources.GetObjectPath(input);
+				objects.Add(output);
+
+				List<string> flags = new List<string>
+				{
+					"-c",
+					input,
+					$"-o {output}",
+				};
+
+				//Add defines
+				foreach (string define in _target.Config.Defines)
+					flags.Add($"-D {define}");
+
+				//Add flags
+				flags.AddRange(_target.Config.Flags);
+				flags.AddRange(_toolchain.Config.Flags);
+
+				tasks.Add(new RunTask(_toolchain.As, flags));
 			}
 
 			//Link
@@ -95,8 +143,27 @@ namespace UBuild.Actions
 					string.Join(" ", objects),
 					$"-o {_target.BinFile}",
 				};
-				flags.AddRange(_toolchain.Config.Flags);
+
+				//Add flags
+				foreach (string flag in _target.Config.LinkFlags)
+					flags.Add(flag);
+
+				flags.AddRange(_toolchain.Config.LinkFlags);
 				tasks.Add(new RunTask(_toolchain.Gpp, flags));
+			}
+
+			//Post build
+			foreach (string postbuild in _target.Config.PostBuild)
+			{
+				string[] parts = postbuild.Split(':');
+				Debug.Assert(parts.Length == 2);
+				Debug.Assert(parts[0][0] == '$');
+
+				string bin = typeof(Toolchain).GetProperty(parts[0].Substring(1)).GetValue(_toolchain) as string;
+				List<string> args = parts[1].Split(' ').Select(i => {
+					return i.Replace("$OUTDIR", _target.OutDir);
+				}).ToList();
+				tasks.Add(new RunTask(bin, args));
 			}
 
 			//Create output directories
@@ -107,9 +174,14 @@ namespace UBuild.Actions
 					Directory.CreateDirectory(dir);
 			}
 
+			//View created file
+			tasks.Add(new RunTask("stat", new List<string> { _target.BinFile }));
+
 			//Display and execute
 			foreach (ITask task in tasks)
 			{
+				if (Verbose)
+					task.Display();
 				if (!task.Run())
 					return ActionResult.Failed;
 			}

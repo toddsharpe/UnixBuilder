@@ -10,6 +10,7 @@ namespace UBuild.Models
 	{
 		private static readonly string SourceRootPathPrefix = ">";
 		public string BinFile => Path.Combine(_outDir, Config.BinName);
+		public string OutDir => _outDir;
 		public TargetFile Config { get; }
 
 		private readonly string _outDir;
@@ -40,6 +41,11 @@ namespace UBuild.Models
 				//Otherwise, assume path is relative to target
 				return Path.Combine(Config.Name, source);
 			}
+		}
+
+		public string GetOutputFile(string fileName)
+		{
+			return Path.Combine(_outDir, fileName);
 		}
 	}
 }
