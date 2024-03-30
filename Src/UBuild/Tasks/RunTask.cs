@@ -11,23 +11,47 @@ namespace UBuild.Tasks
 	{
 		private readonly string _bin;
 		private readonly List<string> _args;
+		private Dictionary<string, string> _env;
 
-		public RunTask(string bin, List<string> args)
+		public RunTask(string bin, List<string> args, Dictionary<string, string> env = null)
 		{
 			_bin = bin;
 			_args = args;
+			_env = env;
 		}
 
 		public bool Run()
 		{
-			Process process = Process.Start(_bin, string.Join(" ", _args));
+			ProcessStartInfo startInfo = new ProcessStartInfo(_bin);
+			if (_args != null)
+			{
+				startInfo.Arguments = string.Join(" ", _args);
+			}
+
+			if (_env != null)
+			{
+				foreach (var item in _env)
+				{
+					startInfo.EnvironmentVariables.Add(item.Key, item.Value);
+				}
+			}
+
+			Process process = Process.Start(startInfo);
 			process.WaitForExit();
+
 			return process.ExitCode == 0;
 		}
 
 		public void Display()
 		{
-			Console.WriteLine("{0} {1}\n", _bin, _args != null ? string.Join(" ", _args) : "<none>");
+			Console.WriteLine("{0} {1}", _bin, _args != null ? string.Join(" ", _args) : "<none>");
+			if (_env != null)
+			{
+				foreach (var item in _env)
+				{
+					Console.WriteLine("\t{0}: {1}", item.Key, item.Value);
+				}
+			}
 		}
 	}
 }

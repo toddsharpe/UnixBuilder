@@ -61,6 +61,13 @@ namespace UBuild.Models
 			}
 		}
 
+		public string GetAbsoluteSrcPath(string entry)
+		{
+			if (!entry.StartsWith(SourceRootPathPrefix))
+				return entry;
+			return Path.Combine(Config.SourcesDir, entry.Substring(SourceRootPathPrefix.Length));
+		}
+
 		public string GetObjectPath(string source)
 		{
 			string objectFile = source.Replace(".cc", ".o").Replace(".cpp", ".o").Replace(".c", ".o").Replace(".s", ".o");

@@ -47,5 +47,12 @@ namespace UBuild.Models
 		{
 			return Path.Combine(_outDir, fileName);
 		}
+
+		public string Eval(string expression)
+		{
+			expression = expression.Replace("$OutDir", OutDir);
+			expression = expression.Replace("$BinFile", BinFile);
+			return expression;
+		}
 	}
 }

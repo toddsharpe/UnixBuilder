@@ -7,6 +7,7 @@ using UBuild.Configs;
 using UBuild.Tasks;
 using UBuild.Models;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace UBuild.Actions
 {
@@ -16,6 +17,7 @@ namespace UBuild.Actions
 		private readonly Sources _sources;
 		private readonly Target _target;
 		private readonly Toolchain _toolchain;
+		public string OutputFile => _target.BinFile + _toolchain.Ext;
 
 		internal BuildAction(Sources sources, Target target, Toolchain toolchain)
 		{
@@ -120,6 +122,7 @@ namespace UBuild.Actions
 
 				List<string> flags = new List<string>
 				{
+					_toolchain.AsFlags,
 					"-c",
 					input,
 					$"-o {output}",
@@ -141,15 +144,30 @@ namespace UBuild.Actions
 				List<string> flags = new List<string>
 				{
 					string.Join(" ", objects),
-					$"-o {_target.BinFile}",
+					$"-o {OutputFile}",
 				};
 
 				//Add flags
 				foreach (string flag in _target.Config.LinkFlags)
-					flags.Add(flag);
+					flags.Add(_target.Eval(flag));
 
 				flags.AddRange(_toolchain.Config.LinkFlags);
 				tasks.Add(new RunTask(_toolchain.Gpp, flags));
+			}
+
+			//Post build env
+			Dictionary<string, string> env = new Dictionary<string, string>
+			{
+				{ "BinFile", _target.BinFile },
+				{ "OutDir", _target.OutDir },
+			};
+			foreach (PropertyInfo property in typeof(Toolchain).GetProperties(BindingFlags.GetProperty | BindingFlags.Public | BindingFlags.Instance))
+			{
+				if (property.PropertyType != typeof(string))
+					continue;
+				
+				string value = property.GetValue(_toolchain) as string;
+				env.Add(property.Name, value);
 			}
 
 			//Post build
@@ -158,12 +176,9 @@ namespace UBuild.Actions
 				string[] parts = postbuild.Split(':');
 				Debug.Assert(parts.Length == 2);
 				Debug.Assert(parts[0][0] == '$');
-
 				string bin = typeof(Toolchain).GetProperty(parts[0].Substring(1)).GetValue(_toolchain) as string;
-				List<string> args = parts[1].Split(' ').Select(i => {
-					return i.Replace("$OUTDIR", _target.OutDir);
-				}).ToList();
-				tasks.Add(new RunTask(bin, args));
+				List<string> args = parts[1].Split(' ').Select(_target.Eval).Select(_sources.GetAbsoluteSrcPath).ToList();
+				tasks.Add(new RunTask(bin, args, env));
 			}
 
 			//Create output directories
@@ -175,7 +190,7 @@ namespace UBuild.Actions
 			}
 
 			//View created file
-			tasks.Add(new RunTask("stat", new List<string> { _target.BinFile }));
+			tasks.Add(new RunTask("stat", new List<string> { OutputFile }));
 
 			//Display and execute
 			foreach (ITask task in tasks)
@@ -186,7 +201,7 @@ namespace UBuild.Actions
 					return ActionResult.Failed;
 			}
 
-			Console.WriteLine("\tSuccessfully built {0}", _target.BinFile);
+			Console.WriteLine("\tSuccessfully built {0}", OutputFile);
 
 			return ActionResult.Success;
 		}
