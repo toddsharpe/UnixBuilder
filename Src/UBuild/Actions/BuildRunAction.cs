@@ -13,11 +13,13 @@ namespace UBuild.Actions
 		public bool Verbose { private get; set; }
 		private readonly BuildAction _action;
 		private readonly Target _target;
+		private readonly Toolchain _toolchain;
 
 		internal BuildRunAction(Sources sources, Target target, Toolchain toolchain)
 		{
 			_action = new BuildAction(sources, target, toolchain);
 			_target = target;
+			_toolchain = toolchain;
 		}
 		
 		public ActionResult Run()
@@ -28,7 +30,7 @@ namespace UBuild.Actions
 				return result;
 
 			Console.WriteLine("---Run---");
-			Process process = Process.Start(_target.BinFile);
+			Process process = Process.Start(_action.OutputFile);
 			process.WaitForExit();
 
 			return ActionResult.Success;

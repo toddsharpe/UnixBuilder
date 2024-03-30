@@ -26,7 +26,7 @@ public class Program
 	public string Project { get;}
 
 	[Option("-c|--compiler <path>", Description = "Toolchain to use")]
-	public string Toolchain { get;} = "Host";
+	public string Toolchain { get;} = UBuild.Models.Project.ALL_TOOLCHAINS;
 
 	[Option("-f|--file <path>", Description = "Package file")]
 	public PackageType PackageType { get;} = PackageType.Zip;
@@ -71,16 +71,18 @@ public class Program
 			case ActionType.Build:
 			{
 				Sources sources = Sources.Open(sourcesDir);
-				Toolchain toolchain = sources.GetToolchain(Toolchain);
 
-				if (!String.IsNullOrEmpty(Project))
+				if (!string.IsNullOrEmpty(Project))
 				{
+					Console.WriteLine($"\tProject: {Project}");
 					Project project = sources.GetProject(Project);
-					action = new BuildProjectAction(sources, project, toolchain);
+					action = new BuildProjectAction(sources, project);
 				}
 				else
 				{
+					Console.WriteLine($"\tTarget: {Target}");
 					Target target = sources.GetTarget(Target);
+					Toolchain toolchain = sources.GetToolchain(Toolchain);
 					action = new BuildAction(sources, target, toolchain);
 				}
 				break;

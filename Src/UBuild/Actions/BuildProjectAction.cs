@@ -10,13 +10,30 @@ namespace UBuild.Actions
 	public class BuildProjectAction : IAction
 	{
 		public bool Verbose { private get; set; }
-		private readonly IEnumerable<BuildAction> _builds;
+		private readonly List<BuildAction> _builds;
 
-		internal BuildProjectAction(Sources sources, Project project, Toolchain toolchain)
+		internal BuildProjectAction(Sources sources, Project project)
 		{
-			_builds = project.Config.Targets
-						.Select(i => sources.GetTarget(i))
-						.Select(i => new BuildAction(sources, i, toolchain));
+			_builds = new List<BuildAction>();
+
+			foreach (var i in project.Targets)
+			{
+				if (i.Item2 != Project.ALL_TOOLCHAINS)
+				{
+					Target target = sources.GetTarget(i.Item1);
+					Toolchain toolchain = sources.GetToolchain(i.Item2);
+					_builds.Add(new BuildAction(sources, target, toolchain));
+				}
+				else
+				{
+					foreach (string toolchainName in sources.Config.Toolchains)
+					{
+						Target target = sources.GetTarget(i.Item1);
+						Toolchain toolchain = sources.GetToolchain(toolchainName);
+						_builds.Add(new BuildAction(sources, target, toolchain));
+					}
+				}
+			}
 		}
 		
 		public ActionResult Run()
