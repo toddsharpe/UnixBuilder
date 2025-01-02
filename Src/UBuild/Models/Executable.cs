@@ -20,6 +20,7 @@ namespace UBuild.Models
 		public List<string> PostBuild { get; set; } = new List<string>();
 
 		internal string OutDir { get; set; }
+		internal string BinFile => Path.Combine(OutDir, Name);
 
 		internal static Executable Load(string filename)
 		{
@@ -30,6 +31,7 @@ namespace UBuild.Models
 		public string Eval(string expression)
 		{
 			expression = expression.Replace("$OutDir", OutDir);
+			expression = expression.Replace("$BinFile", BinFile);
 			expression = expression.Replace("$ExeName", Name);
 			return expression;
 		}

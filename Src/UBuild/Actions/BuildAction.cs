@@ -163,7 +163,7 @@ namespace UBuild.Actions
 			//Post build env
 			Dictionary<string, string> env = new Dictionary<string, string>
 			{
-				{ "BinFile", _exe.Name },
+				{ "BinFile", _exe.BinFile },
 				{ "OutDir", _exe.OutDir },
 			};
 			foreach (PropertyInfo property in typeof(Toolchain).GetProperties(BindingFlags.GetProperty | BindingFlags.Public | BindingFlags.Instance))
@@ -179,8 +179,8 @@ namespace UBuild.Actions
 			foreach (string postbuild in _exe.PostBuild)
 			{
 				string[] parts = postbuild.Split(':');
-				Debug.Assert(parts.Length == 2);
-				Debug.Assert(parts[0][0] == '$');
+				Trace.Assert(parts.Length == 2);
+				Trace.Assert(parts[0][0] == '$');
 				string bin = typeof(Toolchain).GetProperty(parts[0].Substring(1)).GetValue(_toolchain) as string;
 				List<string> args = parts[1].Split(' ').Select(_exe.Eval).ToList();
 				tasks.Add(new RunTask(bin, args, env));
