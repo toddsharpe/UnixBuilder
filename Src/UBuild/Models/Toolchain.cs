@@ -13,6 +13,7 @@ namespace UBuild.Models
 		public string Bin { get; set; }
 		public string Prefix { get; set; }
 		public List<string> Flags { get; set; } = new List<string>();
+		public List<string> CppFlags { get; set; } = new List<string>();
 		public List<string> LinkFlags { get; set; } = new List<string>();
 		
 		public string Gcc => Path.Combine(Bin, Prefix + "gcc");

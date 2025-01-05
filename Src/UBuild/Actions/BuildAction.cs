@@ -113,6 +113,7 @@ namespace UBuild.Actions
 				flags.AddRange(_exe.Flags);
 				flags.AddRange(_exe.CppFlags);
 				flags.AddRange(_toolchain.Flags);
+				flags.AddRange(_toolchain.CppFlags);
 
 				tasks.Add(new RunTask(_toolchain.Gpp, flags));
 			}
